@@ -17,6 +17,7 @@
           "/dev/random"
           "/dev/urandom"
           "/etc/terminfo"
+          "/etc/profile"  # Shell initialization
           "/usr/share/terminfo"
         ];
         env = [
