@@ -11,6 +11,10 @@
         dir = "./examples/claude-sandboxed";
         overrideInputs.landrun-nix = self;
       };
+      example-standalone = {
+        dir = "./examples/standalone";
+        overrideInputs.landrun-nix = self;
+      };
     };
 
     landrunModules = {
