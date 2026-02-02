@@ -7,15 +7,15 @@ on:
     branches: [master]
 
 jobs:
-  build-example:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - uses: nixbuild/nix-quick-install-action@v33
 
-      - run: nix profile install nixpkgs#omnix
+      - run: nix --accept-flake-config profile install github:juspay/vira
 
-      - name: Build
-        run: om ci
+      - name: CI
+        run: vira ci
 
