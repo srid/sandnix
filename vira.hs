@@ -13,7 +13,5 @@
         , "./examples/claude-sandboxed" { overrideInputs = [("landrun-nix", ".")] }
         , "./examples/standalone" { overrideInputs = [("landrun-nix", ".")] }
         ]
-    , cache.url = if
-        | isMain -> Just "https://cache.nixos.asia/oss"
-        | otherwise -> Nothing
+    , signoff = True
     }
