@@ -14,7 +14,7 @@ jobs:
 
       - uses: nixbuild/nix-quick-install-action@v33
 
-      - run: nix profile install github:juspay/vira/cfg-mul
+      - run: nix profile install github:juspay/vira
 
       - name: CI
         run: vira ci
