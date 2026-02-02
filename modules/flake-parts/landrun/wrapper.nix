@@ -5,11 +5,13 @@
       let
         # Helper to generate conditional path argument
         conditionalPathArg = flag: paths:
-          lib.concatMapStringsSep "\n" (p: ''
-            if [ -e "${p}" ]; then
-              args+=("${flag}" "${p}")
-            fi
-          '') paths;
+          lib.concatMapStringsSep "\n"
+            (p: ''
+              if [ -e "${p}" ]; then
+                args+=("${flag}" "${p}")
+              fi
+            '')
+            paths;
 
         # Static args (non-path related)
         staticArgs = lib.concatStringsSep " \\\n      "
