@@ -4,3 +4,4 @@ result-*
 
 # Ignore automatically generated direnv output
 .direnv
+test_secret
