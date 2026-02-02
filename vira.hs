@@ -1,10 +1,10 @@
 -- Pipeline configuration for Vira <https://vira.nixos.asia/>
 
-\ctx ->
+\ctx pipeline ->
   let
     isMain = ctx.branch == "master"
   in
-  ctx.pipeline
+  pipeline
     { build.systems =
         [ "x86_64-linux"
         ]
