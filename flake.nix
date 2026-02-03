@@ -11,8 +11,8 @@
       git = import ./modules/landrun/git.nix;
       haskell = import ./modules/landrun/haskell.nix;
       markitdown = import ./modules/landrun/markitdown.nix;
-      landrun = import ./modules/landrun/landrun.nix;
-      landrunApps = import ./modules/landrun/landrunApps.nix;
+      landrun = ./modules/flake-parts/landrun/landrun.nix;
+      landrunApps = ./modules/flake-parts/landrun/landrunApps.nix;
     };
   };
 }
