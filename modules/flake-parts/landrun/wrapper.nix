@@ -78,6 +78,12 @@ in
                   (literal "/dev/random")
                   (literal "/dev/urandom"))
 
+              ${lib.optionalString config.features.tty ''
+              ;; Allow PTY ioctls (enabled by features.tty)
+              ;; Necessary for interactive applications (stty, shells, REPLs) to control the terminal.
+              (allow file-ioctl (regex #"^/dev/ttys[0-9]+"))
+              ''}
+
               ;; Network Access Control
               ;; Based on 'features.network' or 'cli.unrestrictedNetwork'
               ${if config.cli.unrestrictedNetwork then "(allow network*)" else "(deny network*)"}
@@ -150,10 +156,12 @@ in
                                   rw)
                                     echo "(allow file-read* (subpath \"$p_real\"))" >> "$PROFILE_FILE"
                                     echo "(allow file-write* (subpath \"$p_real\"))" >> "$PROFILE_FILE"
+                                    echo "(allow file-ioctl (subpath \"$p_real\"))" >> "$PROFILE_FILE"
                                     ;;
                                   rwx)
                                     echo "(allow file-read* (subpath \"$p_real\"))" >> "$PROFILE_FILE"
                                     echo "(allow file-write* (subpath \"$p_real\"))" >> "$PROFILE_FILE"
+                                    echo "(allow file-ioctl (subpath \"$p_real\"))" >> "$PROFILE_FILE"
                                     echo "(allow process-exec (subpath \"$p_real\"))" >> "$PROFILE_FILE"
                                     ;;
                                 esac

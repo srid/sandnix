@@ -24,6 +24,10 @@
               program = "${pkgs.coreutils}/bin/ls";
               features.tty = false;
             };
+            test-tty = {
+              program = "${pkgs.coreutils}/bin/stty";
+              features.tty = true;
+            };
             test-curl-deny = {
               program = "${pkgs.curl}/bin/curl";
               features.network = false;

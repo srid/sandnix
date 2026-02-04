@@ -91,6 +91,19 @@ log_output () {
   [ "$status" -ne 0 ]
 }
 
+@test "test-tty can access terminal info" {
+  # This tries to read terminal settings
+  run test-tty -a
+  log_output
+  [ "$status" -eq 0 ]
+  
+  # This tries to set terminal settings (requires write/ioctl access)
+  # using 'stty sane' which resets terminal to sane values
+  run test-tty sane
+  log_output
+  [ "$status" -eq 0 ]
+}
+
 @test "test-curl-deny fails to connect to google.com" {
   run test-curl-deny --connect-timeout 2 https://google.com
   log_output
