@@ -121,15 +121,15 @@
           checks.tests = pkgs.runCommand "tests"
             {
               __impure = true;
-              nativeBuildInputs = [ pkgs.bats ] ++ testDeps;
+              nativeBuildInputs = [ pkgs.bats pkgs.glibc ] ++ testDeps;
             } ''
-            export HOME=home
+            export HOME=$(realpath ./home)
             mkdir -p $HOME
             mkdir -p $HOME/.cache/nix
 
             export NIX_SSL_CERT_FILE="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
 
-            bats ${./test.bats} > $out
+            bats ${./test.bats} | tee $out
           '';
         };
     };

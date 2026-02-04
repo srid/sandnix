@@ -73,8 +73,8 @@ log_output () {
   [ "$status" -eq 0 ]
 }
 
-@test "test-ls cannot list /etc (restricted by default)" {
-  run test-ls /etc
+@test "test-ls cannot list / (restricted by default)" {
+  run test-ls /
   log_output
   [ "$status" -ne 0 ]
 }
@@ -205,8 +205,8 @@ special !@#\$%^&*()"
   [ "$output" == "$SPECIAL_VAR" ]
 }
 
-@test "test-unrestricted-fs: can access /etc" {
-  run test-unrestricted-fs -c "ls -d /etc"
+@test "test-unrestricted-fs: can access /" {
+  run test-unrestricted-fs -c "ls -d /"
   log_output
   [ "$status" -eq 0 ]
 }
