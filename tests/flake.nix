@@ -125,18 +125,23 @@
           checks.tests = pkgs.runCommand "tests"
             {
               __impure = true;
-              nativeBuildInputs = [ pkgs.bats pkgs.glibc ] ++ testDeps;
+              nativeBuildInputs = [ pkgs.bats pkgs.glibc ] ++ testDeps ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ pkgs.util-linux ];
             } ''
             export HOME=$(realpath ./home)
             mkdir -p $HOME
             mkdir -p $HOME/.cache/nix
 
-
             export NIX_SSL_CERT_FILE="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
 
             # Used to skip some tests which fail in nix sandbox on CI
             export IN_NIX_SANBOX=1
-            bats ${./test.bats} | tee $out
+
+            # Wrap bats in script to fake a TTY, required for test-tty
+            ${if pkgs.stdenv.isLinux then ''
+              script -qec "bats ${./test.bats}" /dev/null | tee $out
+            '' else ''
+              bats ${./test.bats} | tee $out
+            ''}
           '';
         };
     };
