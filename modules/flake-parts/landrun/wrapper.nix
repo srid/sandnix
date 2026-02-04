@@ -143,7 +143,7 @@ in
 
                   if [ -e "$p_expanded" ]; then
                     # Resolve to real path for macOS sandbox
-                    p_real=$(perl -e 'use Cwd "abs_path"; print abs_path(shift)' "$p_expanded")
+                    p_real=$(${lib.getExe pkgs.perl} -e 'use Cwd "abs_path"; print abs_path(shift)' "$p_expanded")
 
                     case "$op" in
                       rox)
