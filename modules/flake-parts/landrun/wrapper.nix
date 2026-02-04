@@ -34,7 +34,8 @@ in
           runtimeInputs = lib.optional (!isDarwin) pkgs.landrun;
           text =
             if isDarwin then ''
-              PROFILE_FILE=$(mktemp "/tmp/landrun-$USER-XXXXXX.sb")
+              user=''${USER:-nobody}
+              PROFILE_FILE=$(mktemp "/tmp/landrun-$user-XXXXXX.sb")
               trap 'rm -f "$PROFILE_FILE"' EXIT
 
               cat > "$PROFILE_FILE" <<EOF
@@ -99,7 +100,7 @@ in
               ALLOWED_VARS=(${lib.concatStringsSep " " (map (e: "\"${e}\"") config.cli.env)})
 
               # Create a temp file to store allowed env values
-              ENV_STORE=$(mktemp "/tmp/landrun-env-$USER-XXXXXX")
+              ENV_STORE=$(mktemp "/tmp/landrun-env-$user-XXXXXX")
               trap 'rm -f "$PROFILE_FILE" "$ENV_STORE"' EXIT
 
               for var in "''${ALLOWED_VARS[@]}"; do
