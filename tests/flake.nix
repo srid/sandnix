@@ -125,7 +125,11 @@
           checks.tests = pkgs.runCommand "tests"
             {
               __impure = true;
-              nativeBuildInputs = [ pkgs.bats pkgs.glibc ] ++ testDeps ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ pkgs.util-linux ];
+              nativeBuildInputs =
+                [ pkgs.bats ]
+                ++ testDeps
+                ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ pkgs.util-linux pkgs.glibc ]
+              ;
             } ''
             export HOME=$(realpath ./home)
             mkdir -p $HOME
