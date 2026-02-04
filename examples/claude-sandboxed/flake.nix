@@ -19,10 +19,10 @@
 
         landrunApps.default = {
           imports = [
-            landrun-nix.landrunModules.gh         # So, Claude can run `gh` CLI
-            landrun-nix.landrunModules.git        # So, Claude can run `git` CLI
+            landrun-nix.landrunModules.gh # So, Claude can run `gh` CLI
+            landrun-nix.landrunModules.git # So, Claude can run `git` CLI
             landrun-nix.landrunModules.markitdown # So, Claude can run `markitdown` with CPU info access
-            landrun-nix.landrunModules.haskell    # So, Claude can use Haskell tooling
+            landrun-nix.landrunModules.haskell # So, Claude can use Haskell tooling
           ];
           program = "${pkgs.claude-code}/bin/claude";
           features = {

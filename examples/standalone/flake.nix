@@ -9,7 +9,8 @@
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
       landrunLib = import landrun-nix.lib { inherit pkgs; };
-    in {
+    in
+    {
       packages.${system}.default = landrunLib.makeLandrun {
         name = "hello-wrapped";
         modules = [
