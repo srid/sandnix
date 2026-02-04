@@ -133,6 +133,7 @@
             export HOME=$(realpath ./home)
             mkdir -p $HOME
             mkdir -p $HOME/.cache/nix
+            mkdir -p /etc
 
             export NIX_SSL_CERT_FILE="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
 

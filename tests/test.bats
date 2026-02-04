@@ -86,7 +86,7 @@ log_output () {
 }
 
 @test "test-ls cannot list / (restricted by default)" {
-  run test-ls /
+  run test-ls /etc
   log_output
   [ "$status" -ne 0 ]
 }
@@ -96,7 +96,7 @@ log_output () {
   run test-tty -a
   log_output
   [ "$status" -eq 0 ]
-  
+
   # This tries to set terminal settings (requires write/ioctl access)
   # using 'stty sane' which resets terminal to sane values
   run test-tty sane
@@ -235,7 +235,7 @@ special !@#\$%^&*()"
 }
 
 @test "test-unrestricted-fs: can access /" {
-  run test-unrestricted-fs -c "ls -d /"
+  run test-unrestricted-fs -c "ls -d /etc"
   log_output
   [ "$status" -eq 0 ]
 }
