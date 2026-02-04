@@ -7,6 +7,7 @@
 
   outputs = inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
+      debug = true;
       systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
       imports = [ inputs.landrun-nix.flakeModule ];
 
@@ -45,6 +46,71 @@
             };
             test-no-access = {
               program = "${pkgs.bash}/bin/bash";
+              # Disable implicit tmp access to prevent unintended read access
+              features.tmp = false;
+            };
+            test-multi-paths = {
+              program = "${pkgs.bash}/bin/bash";
+              # Disable implicit tmp access to test explicit permissions
+              features.tmp = false;
+              cli = {
+                ro = [ "./ro1" "./ro2" ];
+                rw = [ "./rw1" "./rw2" ];
+                rox = [ "./rox1" "./rox2" ];
+                rwx = [ "./rwx1" "./rwx2" ];
+              };
+            };
+            test-nested-paths = {
+              program = "${pkgs.bash}/bin/bash";
+              # Disable implicit tmp access to test nested permissions
+              features.tmp = false;
+              cli = {
+                ro = [ "./parent" ];
+                rw = [ "./parent/child" ];
+              };
+            };
+            test-multi-env = {
+              program = "${pkgs.bash}/bin/bash";
+              cli.env = [ "VAR1" "VAR2" ];
+            };
+            test-special-env = {
+              program = "${pkgs.bash}/bin/bash";
+              cli.env = [ "SPECIAL_VAR" ];
+            };
+            test-unrestricted-fs = {
+              program = "${pkgs.bash}/bin/bash";
+              cli.unrestrictedFilesystem = true;
+            };
+            test-no-nix-fail = {
+              program = "${pkgs.bash}/bin/bash";
+              features.nix = false;
+            };
+            test-no-nix-ldd-ok = {
+              program = "${pkgs.bash}/bin/bash";
+              features.nix = false;
+              cli.extraArgs = [ "--ldd" ];
+            };
+            test-add-exec-disabled-fail = {
+              program = "${pkgs.bash}/bin/bash";
+              features.nix = false;
+              cli.extraArgs = [ "--ldd" ];
+              cli.addExec = false;
+            };
+            test-add-exec-disabled-ldd-ok =
+              let
+                bashExe = pkgs.lib.getExe pkgs.bash;
+              in
+              {
+                program = bashExe;
+                features.nix = false;
+                cli.addExec = false;
+                cli.rox = [ bashExe ];
+                cli.extraArgs = [ "--ldd" ];
+              };
+            test-extra-args = {
+              program = "${pkgs.bash}/bin/bash";
+              # We pass -v (verbose) to landrun via extraArgs
+              cli.extraArgs = [ "-v" ];
             };
           };
 
