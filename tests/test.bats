@@ -7,6 +7,7 @@ setup() {
   TEST_TEMP_DIR="$(mktemp -d)"
   cd "$TEST_TEMP_DIR"
   echo "This is a secret" > test_secret
+  OS="$(uname -s)"
 }
 teardown() {
   # shellcheck disable=SC2164
@@ -28,10 +29,13 @@ log_output () {
 @test "test-no-nix-fail: program cannot exec if it cannot access libs from nix store" {
   run test-no-nix-fail -c "echo ok"
   log_output
-  [ "$status" -eq 1 ]
+  [ "$status" -ne 0 ]
 }
 
 @test "test-no-nix-ldd-ok: program can exec if libs are made accessible with --ldd flag" {
+  if [ "$OS" == "Darwin" ]; then
+    skip "landrun specific flag --ldd is not supported on Darwin"
+  fi
   run test-no-nix-ldd-ok -c "echo ok"
   log_output
   [ "$status" -eq 0 ]
@@ -41,10 +45,13 @@ log_output () {
 @test "test-add-exec-disabled-fail: program cannot exec if not explicitly allowed" {
   run test-add-exec-disabled-fail -c "echo ok"
   log_output
-  [ "$status" -eq 1 ]
+  [ "$status" -ne 0 ]
 }
 
 @test "test-add-exec-disabled-ldd-ok: script can exec if not explicitly allowed but interpreter and libs are" {
+  if [ "$OS" == "Darwin" ]; then
+    skip "landrun specific flag --ldd is not supported on Darwin"
+  fi
   run test-add-exec-disabled-ldd-ok -c "echo ok"
   log_output
   [ "$status" -eq 0 ]
@@ -53,6 +60,9 @@ log_output () {
 
 
 @test "test-extra-args: passes extra arguments to landrun" {
+  if [ "$OS" == "Darwin" ]; then
+    skip "landrun specific flag -v (version) is not supported on Darwin"
+  fi
   # We configured test-extra-args with cli.extraArgs = [ "-v" ]
   # In landrun, -v flag prints the version and exits.
   run test-extra-args -c "echo ok"
@@ -60,6 +70,8 @@ log_output () {
   [ "$status" -eq 0 ]
   [[ "$output" == *"landrun version"* ]]
 }
+
+
 
 @test "test-ls can list /tmp" {
   run test-ls /tmp
