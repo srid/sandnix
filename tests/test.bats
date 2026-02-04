@@ -79,14 +79,14 @@ log_output () {
   [ "$status" -ne 0 ]
 }
 
-@test "test-curl-deny fails to connect to example.com" {
-  run test-curl-deny --connect-timeout 2 https://example.com
+@test "test-curl-deny fails to connect to google.com" {
+  run test-curl-deny --connect-timeout 2 https://google.com
   log_output
   [ "$status" -ne 0 ]
 }
 
-@test "test-curl-allow can connect to example.com" {
-  run test-curl-allow -I https://example.com
+@test "test-curl-allow can connect to google.com" {
+  run test-curl-allow -I https://google.com
   log_output
   [ "$status" -eq 0 ]
 }
