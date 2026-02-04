@@ -127,7 +127,8 @@ log_output () {
   run test-no-access -c "cat test_secret"
   log_output
   [ "$status" -ne 0 ]
-  [ "$output" == "cat: test_secret: Permission denied" ]
+  # Linux (landrun) returns "Permission denied", Darwin (sandbox-exec) returns "Operation not permitted"
+  [[ "$output" == "cat: test_secret: Permission denied" || "$output" == "cat: test_secret: Operation not permitted" ]]
 }
 
 @test "test-multi-paths: respects multiple paths" {

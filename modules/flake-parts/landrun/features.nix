@@ -1,4 +1,7 @@
-{ lib, config, ... }:
+{ lib, config, pkgs, ... }:
+let
+  isDarwin = pkgs.stdenv.isDarwin;
+in
 {
   config = {
     # Auto-configure CLI options based on high-level flags
@@ -8,17 +11,19 @@
         rw = [
           "/dev/null"
           "/dev/tty"
+        ] ++ lib.optionals (!isDarwin) [
           "/dev/pts"
           "/dev/ptmx"
         ];
         rox = [
           "/dev/zero"
-          "/dev/full"
           "/dev/random"
           "/dev/urandom"
+          "/usr/share/terminfo"
+        ] ++ lib.optionals (!isDarwin) [
+          "/dev/full"
           "/etc/terminfo"
           "/etc/profile" # Shell initialization
-          "/usr/share/terminfo"
         ];
         env = [
           "TERM"
@@ -35,16 +40,23 @@
           "/nix"
           "/usr"
           "/lib"
+        ] ++ lib.optionals (!isDarwin) [
           "/lib64"
+        ] ++ lib.optionals isDarwin [
+          "/bin"
+          "/usr/bin"
         ];
         rw = [
           "$HOME/.cache/nix"
         ];
         ro = [
+          "/etc/nix"
+        ] ++ lib.optionals (!isDarwin) [
           "/proc/self" # Required for GC to read thread stack info
           "/proc/stat"
-          "/etc/nix"
           "$HOME/.local/share/nix"
+        ] ++ lib.optionals isDarwin [
+          "/var/run/syslog" # Often needed for logging on macOS
         ];
         env = [
           "PATH" # Required for programs to find executables
@@ -58,19 +70,23 @@
         rox = [
           "/etc/resolv.conf"
           "/etc/ssl"
+        ] ++ lib.optionals isDarwin [
+          "/private/etc/resolv.conf"
+          "/private/etc/ssl"
         ];
         unrestrictedNetwork = true;
       })
 
       # Tmp support
       (lib.mkIf config.features.tmp {
-        rw = [ "/tmp" ];
+        rw = [ "/tmp" ] ++ lib.optionals isDarwin [ "/private/tmp" "/private/var/tmp" ];
       })
 
       # D-Bus support (for keyring/Secret Service API)
       (lib.mkIf config.features.dbus {
         rw = [
           "$HOME/.local/share/keyrings" # Keyring storage
+        ] ++ lib.optionals (!isDarwin) [
           "/run/user/$UID/bus" # D-Bus socket
         ];
         env = [
