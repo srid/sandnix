@@ -121,6 +121,9 @@ log_output () {
 }
 
 @test "test-no-access: cannot read file not allowed" {
+  if [[ -n $IN_NIX_SANBOX ]]; then
+    skip "this test fails in nix sanbox on CI runner"
+  fi
   run test-no-access -c "cat test_secret"
   log_output
   [ "$status" -ne 0 ]

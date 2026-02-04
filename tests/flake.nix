@@ -127,8 +127,11 @@
             mkdir -p $HOME
             mkdir -p $HOME/.cache/nix
 
+
             export NIX_SSL_CERT_FILE="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
 
+            # Used to skip some tests which fail in nix sandbox on CI
+            export IN_NIX_SANBOX=1
             bats ${./test.bats} | tee $out
           '';
         };
