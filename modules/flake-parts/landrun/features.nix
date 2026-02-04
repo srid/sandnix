@@ -44,7 +44,6 @@ in
           "/lib64"
         ] ++ lib.optionals isDarwin [
           "/bin"
-          "/usr/bin"
         ];
         rw = [
           "$HOME/.cache/nix"
@@ -70,16 +69,13 @@ in
         rox = [
           "/etc/resolv.conf"
           "/etc/ssl"
-        ] ++ lib.optionals isDarwin [
-          "/private/etc/resolv.conf"
-          "/private/etc/ssl"
         ];
         unrestrictedNetwork = true;
       })
 
       # Tmp support
       (lib.mkIf config.features.tmp {
-        rw = [ "/tmp" ] ++ lib.optionals isDarwin [ "/private/tmp" "/private/var/tmp" ];
+        rw = [ "/tmp" ] ++ lib.optionals isDarwin [ "/var/folders" ];
       })
 
       # D-Bus support (for keyring/Secret Service API)

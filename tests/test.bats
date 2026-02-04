@@ -79,6 +79,30 @@ log_output () {
   [ "$status" -eq 0 ]
 }
 
+@test "test-mktemp can write to /tmp" {
+  run test-mktemp /tmp/test.XXXXXX
+  log_output
+  [ "$status" -eq 0 ]
+  # Check if output looks like a path
+  [[ "$output" == /tmp/test.* ]]
+}
+
+@test "test-mktemp can write to default tmp directory" {
+  run test-mktemp
+  log_output
+  [ "$status" -eq 0 ]
+  # Verify the file was actually created and is writable
+  [ -f "$output" ]
+  [ -w "$output" ]
+  rm "$output"
+}
+
+@test "test-mktemp-no-tmp fails to write to /tmp" {
+  run test-mktemp-no-tmp /tmp/test.XXXXXX
+  log_output
+  [ "$status" -ne 0 ]
+}
+
 @test "test-ls can list /nix/store" {
   run test-ls -d /nix/store
   log_output

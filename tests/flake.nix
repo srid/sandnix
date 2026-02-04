@@ -27,6 +27,14 @@
               program = "${pkgs.coreutils}/bin/stty";
               features.tty = true;
             };
+            test-mktemp = {
+              program = "${pkgs.coreutils}/bin/mktemp";
+              features.tmp = true;
+            };
+            test-mktemp-no-tmp = {
+              program = "${pkgs.coreutils}/bin/mktemp";
+              features.tmp = false;
+            };
             test-curl-deny = {
               program = "${pkgs.curl}/bin/curl";
               features.network = false;
