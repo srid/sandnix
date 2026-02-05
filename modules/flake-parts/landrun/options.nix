@@ -35,7 +35,7 @@ in
           tmp = mkOption {
             type = types.bool;
             default = true;
-            description = "Enable read-write access to /tmp for temporary files";
+            description = "Enable read-write-execute access to /tmp for temporary files";
           };
 
           dbus = mkOption {

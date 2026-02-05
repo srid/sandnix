@@ -75,7 +75,7 @@ in
 
       # Tmp support
       (lib.mkIf config.features.tmp {
-        rw = [ "/tmp" ] ++ lib.optionals isDarwin [ "/var/folders" ];
+        rwx = [ "/tmp" ] ++ lib.optionals isDarwin [ "/var/folders" ];
       })
 
       # D-Bus support (for keyring/Secret Service API)

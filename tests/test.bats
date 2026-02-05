@@ -103,6 +103,28 @@ log_output () {
   [ "$status" -ne 0 ]
 }
 
+@test "test-exec-tmp can execute script in /tmp" {
+  # We use test-env-var (bash) as it has features.tmp = true (default)
+  run test-env-var -c '
+    SCRIPT=$(mktemp /tmp/test-script.XXXXXX)
+    echo "#!$BASH" > "$SCRIPT"
+    echo "echo executed" >> "$SCRIPT"
+    chmod +x "$SCRIPT"
+    "$SCRIPT"
+  '
+  log_output
+  # This implies checking if execution is allowed.
+  # If status is 0, it allowed execution.
+  # If status is 126 or 1 (EPERM), it denied.
+  # We expect failure currently if tmp is not rwx
+  if [ "$status" -eq 0 ]; then
+    echo "Execution allowed"
+  else
+    echo "Execution denied"
+    false
+  fi
+}
+
 @test "test-ls can list /nix/store" {
   run test-ls -d /nix/store
   log_output
