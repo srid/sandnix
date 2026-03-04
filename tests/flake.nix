@@ -12,7 +12,9 @@
 
       perSystem = { config, pkgs, ... }:
         let
-          testDeps = [ pkgs.bats ] ++ (builtins.attrValues config.packages);
+          testDeps = [ pkgs.bats ]
+            ++ (builtins.attrValues config.packages)
+            ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ pkgs.util-linux ];
         in
         {
           landrunApps = {
