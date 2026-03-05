@@ -4,7 +4,7 @@ let
     name = name;
     text = ''
       user=''${USER:-nobody}
-      PROFILE_FILE=$(mktemp "/tmp/sandbox-profile-$user-XXXXXX.sb")
+      PROFILE_FILE=$(mktemp "/tmp/sandbox-profile-$user-XXXXXX")
       trap 'rm -f "$PROFILE_FILE"' EXIT
 
       cat > "$PROFILE_FILE" <<EOF
