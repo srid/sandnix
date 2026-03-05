@@ -1,4 +1,4 @@
-{ lib, config, pkgs, name, ... }:
+{ lib, config, pkgs, ... }:
 {
   config = lib.mkIf (!pkgs.stdenv.isDarwin) {
     wrappedPackage =
@@ -26,7 +26,7 @@
           );
       in
       (pkgs.writeShellApplication {
-        name = name;
+        name = config.name;
         runtimeInputs = [ pkgs.landrun ];
         text = ''
           args=()

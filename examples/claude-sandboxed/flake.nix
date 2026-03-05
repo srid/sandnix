@@ -18,6 +18,7 @@
         };
 
         landrunApps.default = {
+          name = "claude";
           imports = [
             landrun-nix.landrunModules.gh # So, Claude can run `gh` CLI
             landrun-nix.landrunModules.git # So, Claude can run `git` CLI

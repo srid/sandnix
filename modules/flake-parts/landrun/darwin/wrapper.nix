@@ -1,7 +1,7 @@
-{ lib, config, pkgs, name, ... }:
+{ lib, config, pkgs, ... }:
 let
   pkg = pkgs.writeShellApplication {
-    name = name;
+    name = config.name;
     runtimeInputs = [ pkgs.coreutils ];
     text = ''
       user=''${USER:-nobody}
