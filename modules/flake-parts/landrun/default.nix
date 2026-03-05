@@ -17,7 +17,7 @@ in
           apps = lib.mapAttrs
             (name: cfg: {
               type = "app";
-              program = "${cfg.wrappedPackage}/bin/${name}";
+              program = lib.getExe cfg.wrappedPackage;
               meta = cfg.meta;
             })
             config.landrunApps;
