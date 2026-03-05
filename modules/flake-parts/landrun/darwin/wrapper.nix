@@ -2,9 +2,10 @@
 let
   pkg = pkgs.writeShellApplication {
     name = name;
+    runtimeInputs = [ pkgs.coreutils ];
     text = ''
       user=''${USER:-nobody}
-      PROFILE_FILE=$(${pkgs.coreutils}/bin/mktemp "/tmp/sandbox-profile-$user-XXXXXX.sb")
+      PROFILE_FILE=$(mktemp "/tmp/sandbox-profile-$user-XXXXXX.sb")
       trap 'rm -f "$PROFILE_FILE"' EXIT
 
       cat > "$PROFILE_FILE" <<EOF
@@ -69,7 +70,7 @@ let
       ALLOWED_VARS=(${lib.concatStringsSep " " (map (e: "\"${e}\"") config.cli.env)})
 
       # Create a temp file to store allowed env values
-      ENV_STORE=$(${pkgs.coreutils}/bin/mktemp "/tmp/sandbox-env-$user-XXXXXX")
+      ENV_STORE=$(mktemp "/tmp/sandbox-env-$user-XXXXXX")
       trap 'rm -f "$PROFILE_FILE" "$ENV_STORE"' EXIT
 
       for var in "''${ALLOWED_VARS[@]}"; do
