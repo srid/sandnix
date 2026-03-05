@@ -65,38 +65,17 @@ let
 
       EOF
 
-      # Isolation of environment variables
-      # We save allowed variables, unset all, then restore allowed.
+      # Isolation of environment variables (like landrun does)
       ALLOWED_VARS=(${lib.concatStringsSep " " (map (e: "\"${e}\"") config.cli.env)})
+      KEEP_VARS=("HOME" "USER" "LOGNAME" "PATH" "TERM" "SHELL" "LANG" "LC_ALL" "DISPLAY")
 
-      # Create a temp file to store allowed env values
-      ENV_STORE=$(mktemp "/tmp/sandbox-env-$user-XXXXXX")
-      trap 'rm -f "$PROFILE_FILE" "$ENV_STORE"' EXIT
-
-      for var in "''${ALLOWED_VARS[@]}"; do
+      ENV_ARGS=()
+      for var in "''${ALLOWED_VARS[@]}" "''${KEEP_VARS[@]}"; do
          # Check if variable is set
-         if eval "[[ -v $var ]]"; then
-            # Use declare -p to safely serialize variable
-            declare -p "$var" >> "$ENV_STORE"
+         if [[ -v "$var" ]]; then
+            ENV_ARGS+=("$var=''${!var}")
          fi
       done
-
-      # Clear environment (mostly)
-      # We keep some basic ones that are usually expected
-      KEEP_VARS=("HOME" "USER" "LOGNAME" "PATH" "TERM" "SHELL" "LANG" "LC_ALL" "DISPLAY")
-      for var in $(env | cut -d= -f1); do
-        keep=0
-        for k in "''${KEEP_VARS[@]}"; do [[ "$var" == "$k" ]] && keep=1 && break; done
-        if [[ $keep -eq 0 ]]; then
-          unset "$var"
-        fi
-      done
-
-      # Restore allowed vars
-      if [ -s "$ENV_STORE" ]; then
-        # shellcheck disable=SC1090
-        source "$ENV_STORE"
-      fi
 
       # Function to add paths to SBPL profile
       add_paths() {
@@ -162,10 +141,8 @@ let
       # shellcheck disable=SC2016
       ${lib.optionalString (config.cli.rwx != []) "add_paths rwx ${lib.escapeShellArgs config.cli.rwx}\n"}
 
-      # Set up environment variables
-      ${lib.concatMapStrings (e: "export ${e}\n") config.cli.env}
-
-      exec sandbox-exec -f "$PROFILE_FILE" ${config.program} "$@"
+      # Execute with isolated environment
+      exec env -i "''${ENV_ARGS[@]}" sandbox-exec -f "$PROFILE_FILE" ${config.program} "$@"
     '';
   };
 in

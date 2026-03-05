@@ -271,13 +271,24 @@ log_output () {
 }
 
 @test "test-special-env: passes special characters and multiline" {
-  export SPECIAL_VAR="line1
+  export NOT_INHERITED='abc
+  --efd
+  '
+  export SPECIAL_VAR='line1
 line2
-special !@#\$%^&*()"
+  special !@#\$%^&*()'
+
   run test-special-env -c "echo \"\$SPECIAL_VAR\""
   log_output
+
   [ "$status" -eq 0 ]
   [ "$output" == "$SPECIAL_VAR" ]
+
+  local expected_line_count=3
+  if [ "$(wc -l <<< "$output")" -ne $expected_line_count ]; then
+    echo "Error: output must contain exactly $expected_line_count lines."
+    return 1
+  fi
 }
 
 @test "test-unrestricted-fs: can access /" {
