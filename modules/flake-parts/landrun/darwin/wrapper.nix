@@ -4,7 +4,7 @@ let
     name = name;
     text = ''
       user=''${USER:-nobody}
-      PROFILE_FILE=$(mktemp "/tmp/landrun-$user-XXXXXX.sb")
+      PROFILE_FILE=$(mktemp "/tmp/sandbox-profile-$user-XXXXXX.sb")
       trap 'rm -f "$PROFILE_FILE"' EXIT
 
       cat > "$PROFILE_FILE" <<EOF
@@ -64,12 +64,12 @@ let
 
       EOF
 
-      # Isolation of environment variables (like landrun does)
+      # Isolation of environment variables
       # We save allowed variables, unset all, then restore allowed.
       ALLOWED_VARS=(${lib.concatStringsSep " " (map (e: "\"${e}\"") config.cli.env)})
 
       # Create a temp file to store allowed env values
-      ENV_STORE=$(mktemp "/tmp/landrun-env-$user-XXXXXX")
+      ENV_STORE=$(mktemp "/tmp/sandbox-env-$user-XXXXXX")
       trap 'rm -f "$PROFILE_FILE" "$ENV_STORE"' EXIT
 
       for var in "''${ALLOWED_VARS[@]}"; do

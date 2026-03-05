@@ -17,13 +17,8 @@ jobs:
       - name: Install Nix
         uses: nixbuild/nix-quick-install-action@v34
 
+      - name: Install just
+        uses: extractions/setup-just@v2
+
       - name: Run tests
-        run: |
-          if [ "$(uname)" = "Darwin" ]; then
-            # macOS: BSD script syntax: script -q <output> <command>
-            SCRIPT_ARGS="-q /dev/null ./tests/test.bats"
-          else
-            # Linux: util-linux script syntax: script -qec <command> <output>
-            SCRIPT_ARGS="-qec ./tests/test.bats /dev/null"
-          fi
-          nix develop ./tests --override-input landrun-nix path:./. -c script $SCRIPT_ARGS
+        run: just test

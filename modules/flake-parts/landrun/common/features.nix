@@ -36,6 +36,7 @@
         ];
         ro = [
           "/etc/nix"
+          "$HOME/.local/share/nix"
         ];
         env = [
           "PATH" # Required for programs to find executables
@@ -56,17 +57,6 @@
       # Tmp support
       (lib.mkIf config.features.tmp {
         rwx = [ "/tmp" ];
-      })
-
-      # D-Bus support (for keyring/Secret Service API)
-      (lib.mkIf config.features.dbus {
-        rw = [
-          "$HOME/.local/share/keyrings" # Keyring storage
-        ];
-        env = [
-          "DBUS_SESSION_BUS_ADDRESS" # D-Bus session bus
-          "XDG_RUNTIME_DIR" # Runtime directory
-        ];
       })
     ];
   };

@@ -24,7 +24,6 @@
         ro = [
           "/proc/self" # Required for GC to read thread stack info
           "/proc/stat"
-          "$HOME/.local/share/nix"
         ];
       })
 
@@ -32,6 +31,11 @@
       (lib.mkIf config.features.dbus {
         rw = [
           "/run/user/$UID/bus" # D-Bus socket
+          "$HOME/.local/share/keyrings" # Keyring storage
+        ];
+        env = [
+          "DBUS_SESSION_BUS_ADDRESS" # D-Bus session bus
+          "XDG_RUNTIME_DIR" # Runtime directory
         ];
       })
     ];
