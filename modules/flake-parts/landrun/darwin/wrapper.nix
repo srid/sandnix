@@ -2,6 +2,7 @@
 let
   pkg = pkgs.writeShellApplication {
     name = config.name;
+    meta.mainProgram = config.name;
     runtimeInputs = [ pkgs.coreutils ];
     text = ''
       user=''${USER:-nobody}

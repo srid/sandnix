@@ -27,6 +27,7 @@
       in
       (pkgs.writeShellApplication {
         name = config.name;
+        meta.mainProgram = config.name;
         runtimeInputs = [ pkgs.landrun ];
         text = ''
           args=()
