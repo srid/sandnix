@@ -40,7 +40,12 @@
             rwx = [ "." ];
             env = [
               "HOME" # Needed for gcloud and claude to resolve ~/ paths for config/state files
+
+              # Known Claude Code variables
               "CLAUDE_CODE_USE_VERTEX"
+              "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS"
+              "ANTHROPIC_API_KEY"
+              "ANTHROPIC_BASE_URL"
               "ANTHROPIC_MODEL"
             ];
           };
