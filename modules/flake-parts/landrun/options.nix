@@ -16,6 +16,11 @@ in
       description = "The program to wrap with landrun (e.g., \${pkgs.foo}/bin/foo)";
     };
 
+    preHook = mkOption {
+      type = types.lines;
+      default = "";
+      description = "Shell commands to execute before starting the sandbox";
+    };
 
     features = mkOption {
       type = types.submodule {
