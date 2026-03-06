@@ -83,7 +83,7 @@ See [examples/claude-sandboxed](./examples/claude-sandboxed/flake.nix) for a com
 Try it: 
 
 ```sh
-nix run github:srid/sandnix?dir=examples/claude-sandboxed
+nix run 'github:srid/sandnix?dir=examples/claude-sandboxed'
 ```
 
 ## Features
@@ -121,8 +121,6 @@ https://github.com/srid/sandnix/discussions
 GPL-3.0
 
 ## Similar projects
-
-From [the original announcement post](https://x.com/sridca/status/1976791931431927899):
 
 - [nixpak](https://github.com/nixpak/nixpak): a fancy declarative wrapper around bubblewrap.
 - [jail.nix](https://sr.ht/~alexdavid/jail.nix/): helper to make it easy and ergonomic to wrap your derivations in bubblewrap.
