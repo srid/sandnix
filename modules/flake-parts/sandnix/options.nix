@@ -13,7 +13,7 @@ in
 
     program = mkOption {
       type = types.str;
-      description = "The program to wrap with landrun (e.g., \${pkgs.foo}/bin/foo)";
+      description = "The program to wrap with sandnix (e.g., \${pkgs.foo}/bin/foo)";
     };
 
     preHook = mkOption {
@@ -114,12 +114,12 @@ in
           extraArgs = mkOption {
             type = types.listOf types.str;
             default = [ ];
-            description = "Additional landrun arguments";
+            description = "Additional sandnix arguments";
           };
         };
       };
       default = { };
-      description = "Landrun CLI arguments configuration";
+      description = "Sandnix CLI arguments configuration";
     };
 
     meta = mkOption {

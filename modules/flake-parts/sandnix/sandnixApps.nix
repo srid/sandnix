@@ -5,7 +5,7 @@ let
     types;
 in
 {
-  options.landrunApps = mkOption {
+  options.sandnixApps = mkOption {
     type = types.attrsOf (types.submoduleWith {
       modules = [
         ./options.nix
@@ -15,6 +15,6 @@ in
       ];
     });
     default = { };
-    description = "Applications to wrap with landrun sandbox";
+    description = "Applications to wrap with sandnix sandbox";
   };
 }

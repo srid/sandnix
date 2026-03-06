@@ -4,15 +4,15 @@
   outputs = { self }: {
     lib = ./nix/lib.nix;
 
-    flakeModule = ./modules/flake-parts/landrun;
+    flakeModule = ./modules/flake-parts/sandnix;
 
-    landrunModules = {
-      gh = import ./modules/landrun/gh.nix;
-      git = import ./modules/landrun/git.nix;
-      haskell = import ./modules/landrun/haskell.nix;
-      markitdown = import ./modules/landrun/markitdown.nix;
-      landrun = ./modules/flake-parts/landrun/landrun.nix;
-      landrunApps = ./modules/flake-parts/landrun/landrunApps.nix;
+    sandnixModules = {
+      gh = import ./modules/sandnix/gh.nix;
+      git = import ./modules/sandnix/git.nix;
+      haskell = import ./modules/sandnix/haskell.nix;
+      markitdown = import ./modules/sandnix/markitdown.nix;
+      sandnix = ./modules/flake-parts/sandnix/sandnix.nix;
+      sandnixApps = ./modules/flake-parts/sandnix/sandnixApps.nix;
     };
   };
 }

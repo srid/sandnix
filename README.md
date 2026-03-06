@@ -1,8 +1,8 @@
-[![GitHub Discussions](https://img.shields.io/github/discussions/srid/landrun-nix)](https://github.com/srid/landrun-nix/discussions)
+[![GitHub Discussions](https://img.shields.io/github/discussions/srid/sandnix)](https://github.com/srid/sandnix/discussions)
 
-# landrun-nix
+# sandnix
 
-A Nix flake-parts module for wrapping programs with [landrun](https://github.com/Zouuup/landrun) (Landlock) sandbox.
+A Nix flake-parts module for wrapping programs with a sandboxed environment using [landrun](https://github.com/Zouuup/landrun) (Landlock) on Linux, and `sandbox-exec` on macOS.
 
 ## Usage
 
@@ -10,14 +10,14 @@ In your `flake.nix`:
 
 ```nix
 {
-  inputs.landrun-nix.url = "github:srid/landrun-nix";
+  inputs.sandnix.url = "github:srid/sandnix";
 
-  outputs = { flake-parts, landrun-nix, ... }:
+  outputs = { flake-parts, sandnix, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
-      imports = [ landrun-nix.flakeModule ];
+      imports = [ sandnix.flakeModule ];
 
       perSystem = { pkgs, ... }: {
-        landrunApps.my-app-sandboxed = {
+        sandnixApps.my-app-sandboxed = {
           program = "${pkgs.my-app}/bin/my-app";
           features = {
             tty = true;      # Terminal support
@@ -40,20 +40,20 @@ Run with: `nix run .#my-app-sandboxed`
 
 ## Reusable Modules
 
-landrun-nix provides reusable modules for common applications via `landrunModules.*`. These can be imported into your app configurations:
+sandnix provides reusable modules for common applications via `sandnixModules.*`. These can be imported into your app configurations:
 
 ```nix
 {
-  inputs.landrun-nix.url = "github:srid/landrun-nix";
+  inputs.sandnix.url = "github:srid/sandnix";
 
-  outputs = { flake-parts, landrun-nix, ... }:
+  outputs = { flake-parts, sandnix, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
-      imports = [ landrun-nix.flakeModule ];
+      imports = [ sandnix.flakeModule ];
 
       perSystem = { pkgs, ... }: {
-        landrunApps.my-app = {
+        sandnixApps.my-app = {
           imports = [
-            landrun-nix.landrunModules.gh  # Import GitHub CLI module
+            sandnix.sandnixModules.gh  # Import GitHub CLI module
           ];
           program = "${pkgs.my-app}/bin/my-app";
           features.network = true;
@@ -67,10 +67,10 @@ landrun-nix provides reusable modules for common applications via `landrunModule
 
 | Module | Description |
 |--------|-------------|
-| `landrunModules.gh` | GitHub CLI (`gh`) configuration with D-Bus keyring support |
-| `landrunModules.git` | Git configuration with TTY support and repository access |
-| `landrunModules.haskell` | Haskell tooling with Cabal configuration and state directory access |
-| `landrunModules.markitdown` | Markitdown configuration with `/proc/cpuinfo` access |
+| `sandnixModules.gh` | GitHub CLI (`gh`) configuration with D-Bus keyring support |
+| `sandnixModules.git` | Git configuration with TTY support and repository access |
+| `sandnixModules.haskell` | Haskell tooling with Cabal configuration and state directory access |
+| `sandnixModules.markitdown` | Markitdown configuration with `/proc/cpuinfo` access |
 
 ## Examples
 
@@ -83,7 +83,7 @@ See [examples/claude-sandboxed](./examples/claude-sandboxed/flake.nix) for a com
 Try it: 
 
 ```sh
-nix run github:srid/landrun-nix?dir=examples/claude-sandboxed
+nix run github:srid/sandnix?dir=examples/claude-sandboxed
 ```
 
 ## Features
@@ -114,7 +114,7 @@ Fine-grained control via `cli.*`:
 
 ## Discussions
 
-https://github.com/srid/landrun-nix/discussions
+https://github.com/srid/sandnix/discussions
 
 ## License
 

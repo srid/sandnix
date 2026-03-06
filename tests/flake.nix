@@ -1,14 +1,14 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    landrun-nix.url = "path:../";
+    sandnix.url = "path:../";
     flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
   outputs = inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
-      imports = [ inputs.landrun-nix.flakeModule ];
+      imports = [ inputs.sandnix.flakeModule ];
 
       perSystem = { config, pkgs, ... }:
         let
@@ -17,7 +17,7 @@
             ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ pkgs.util-linux ];
         in
         {
-          landrunApps = {
+          sandnixApps = {
             test-true = {
               program = "${pkgs.coreutils}/bin/true";
             };

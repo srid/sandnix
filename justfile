@@ -1,6 +1,6 @@
-# Run the claude-sandboxed example with local landrun-nix override
+# Run the claude-sandboxed example with local sandnix override
 run-example:
-    nix run ./examples/claude-sandboxed --override-input landrun-nix .
+    nix run ./examples/claude-sandboxed --override-input sandnix .
 
 # Run integration tests
 test:
@@ -12,4 +12,4 @@ test:
       # Linux: util-linux script syntax: script -qec <command> <output>
       SCRIPT_ARGS="-qec ./tests/test.bats /dev/null"
     fi
-    nix develop ./tests --override-input landrun-nix path:./. -c script $SCRIPT_ARGS
+    nix develop ./tests --override-input sandnix path:./. -c script $SCRIPT_ARGS
