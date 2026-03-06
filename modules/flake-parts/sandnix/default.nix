@@ -7,12 +7,12 @@ in
   options = {
     perSystem = mkPerSystemOption
       ({ config, ... }: {
-        imports = [ ./landrunApps.nix ];
+        imports = [ ./sandnixApps.nix ];
 
         config = {
           packages = lib.mapAttrs
             (name: cfg: cfg.wrappedPackage)
-            config.landrunApps;
+            config.sandnixApps;
 
           apps = lib.mapAttrs
             (name: cfg: {
@@ -20,7 +20,7 @@ in
               program = lib.getExe cfg.wrappedPackage;
               meta = cfg.meta;
             })
-            config.landrunApps;
+            config.sandnixApps;
         };
       });
   };

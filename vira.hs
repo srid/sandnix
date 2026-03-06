@@ -11,9 +11,9 @@
         ]
     , build.flakes =
         [ "."
-        , "./examples/claude-sandboxed" { overrideInputs = [("landrun-nix", ".")] }
-        , "./examples/standalone" { overrideInputs = [("landrun-nix", ".")] }
-        , "./tests" { overrideInputs = [("landrun-nix", ".")] }
+        , "./examples/claude-sandboxed" { overrideInputs = [("sandnix", ".")] }
+        , "./examples/standalone" { overrideInputs = [("sandnix", ".")] }
+        , "./tests" { overrideInputs = [("sandnix", ".")] }
         ]
     , signoff.enable = True
     }

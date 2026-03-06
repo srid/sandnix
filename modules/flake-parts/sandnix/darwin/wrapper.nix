@@ -152,7 +152,7 @@ in
   config = lib.mkIf pkgs.stdenv.isDarwin {
     wrappedPackage =
       if config.cli.extraArgs != [ ] then
-        lib.warn "landrun-nix: extraArgs are ignored on Darwin as sandbox-exec does not support them." pkg
+        lib.warn "sandnix: extraArgs are ignored on Darwin as sandbox-exec does not support them." pkg
       else
         pkg;
   };

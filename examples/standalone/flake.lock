@@ -1,16 +1,5 @@
 {
   "nodes": {
-    "landrun-nix": {
-      "locked": {
-        "path": "../../",
-        "type": "path"
-      },
-      "original": {
-        "path": "../../",
-        "type": "path"
-      },
-      "parent": []
-    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1769461804,
@@ -29,9 +18,20 @@
     },
     "root": {
       "inputs": {
-        "landrun-nix": "landrun-nix",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "sandnix": "sandnix"
       }
+    },
+    "sandnix": {
+      "locked": {
+        "path": "../../",
+        "type": "path"
+      },
+      "original": {
+        "path": "../../",
+        "type": "path"
+      },
+      "parent": []
     }
   },
   "root": "root",

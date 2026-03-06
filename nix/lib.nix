@@ -1,14 +1,14 @@
 { pkgs, lib ? pkgs.lib, ... }:
 
 rec {
-  evalModules = { name ? "landrun", modules }: (lib.evalModules {
+  evalModules = { name ? "sandnix", modules }: (lib.evalModules {
     modules = [
-      ../modules/flake-parts/landrun/landrun.nix
+      ../modules/flake-parts/sandnix/sandnix.nix
       { _module.args = { inherit pkgs name; }; }
     ] ++ modules;
   });
 
-  makeLandrun = { name, modules }: (evalModules {
+  makeSandnix = { name, modules }: (evalModules {
     inherit name modules;
   }).config.wrappedPackage;
 }

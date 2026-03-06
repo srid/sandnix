@@ -2,14 +2,14 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
-    landrun-nix.url = "path:../../";
+    sandnix.url = "path:../../";
   };
 
-  outputs = inputs@{ flake-parts, landrun-nix, ... }:
+  outputs = inputs@{ flake-parts, sandnix, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
 
-      imports = [ landrun-nix.flakeModule ];
+      imports = [ sandnix.flakeModule ];
 
       perSystem = { pkgs, system, ... }: {
         _module.args.pkgs = import inputs.nixpkgs {
@@ -17,13 +17,13 @@
           config.allowUnfree = true;
         };
 
-        landrunApps.default = {
+        sandnixApps.default = {
           name = "claude";
           imports = [
-            landrun-nix.landrunModules.gh # So, Claude can run `gh` CLI
-            landrun-nix.landrunModules.git # So, Claude can run `git` CLI
-            landrun-nix.landrunModules.markitdown # So, Claude can run `markitdown` with CPU info access
-            landrun-nix.landrunModules.haskell # So, Claude can use Haskell tooling
+            sandnix.sandnixModules.gh # So, Claude can run `gh` CLI
+            sandnix.sandnixModules.git # So, Claude can run `git` CLI
+            sandnix.sandnixModules.markitdown # So, Claude can run `markitdown` with CPU info access
+            sandnix.sandnixModules.haskell # So, Claude can use Haskell tooling
           ];
           program = "${pkgs.claude-code}/bin/claude";
           features = {
