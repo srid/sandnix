@@ -7,13 +7,14 @@
 
   outputs = inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
-      debug = true;
       systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
       imports = [ inputs.landrun-nix.flakeModule ];
 
       perSystem = { config, pkgs, ... }:
         let
-          testDeps = [ pkgs.bats ] ++ (builtins.attrValues config.packages);
+          testDeps = [ pkgs.bats ]
+            ++ (builtins.attrValues config.packages)
+            ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ pkgs.util-linux ];
         in
         {
           landrunApps = {
@@ -23,6 +24,18 @@
             test-ls = {
               program = "${pkgs.coreutils}/bin/ls";
               features.tty = false;
+            };
+            test-tty = {
+              program = "${pkgs.coreutils}/bin/stty";
+              features.tty = true;
+            };
+            test-mktemp = {
+              program = "${pkgs.coreutils}/bin/mktemp";
+              features.tmp = true;
+            };
+            test-mktemp-no-tmp = {
+              program = "${pkgs.coreutils}/bin/mktemp";
+              features.tmp = false;
             };
             test-curl-deny = {
               program = "${pkgs.curl}/bin/curl";
@@ -121,18 +134,28 @@
           checks.tests = pkgs.runCommand "tests"
             {
               __impure = true;
-              nativeBuildInputs = [ pkgs.bats pkgs.glibc ] ++ testDeps;
+              nativeBuildInputs =
+                [ pkgs.bats ]
+                ++ testDeps
+                ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ pkgs.util-linux pkgs.glibc ]
+              ;
             } ''
             export HOME=$(realpath ./home)
             mkdir -p $HOME
             mkdir -p $HOME/.cache/nix
-
+            mkdir -p /etc
 
             export NIX_SSL_CERT_FILE="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
 
             # Used to skip some tests which fail in nix sandbox on CI
             export IN_NIX_SANBOX=1
-            bats ${./test.bats} | tee $out
+
+            # Wrap bats in script to fake a TTY, required for test-tty
+            ${if pkgs.stdenv.isLinux then ''
+              script -qec "bats ${./test.bats}" /dev/null | tee $out
+            '' else ''
+              bats ${./test.bats} | tee $out
+            ''}
           '';
         };
     };

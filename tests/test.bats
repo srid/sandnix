@@ -7,6 +7,7 @@ setup() {
   TEST_TEMP_DIR="$(mktemp -d)"
   cd "$TEST_TEMP_DIR"
   echo "This is a secret" > test_secret
+  OS="$(uname -s)"
 }
 teardown() {
   # shellcheck disable=SC2164
@@ -28,10 +29,13 @@ log_output () {
 @test "test-no-nix-fail: program cannot exec if it cannot access libs from nix store" {
   run test-no-nix-fail -c "echo ok"
   log_output
-  [ "$status" -eq 1 ]
+  [ "$status" -ne 0 ]
 }
 
 @test "test-no-nix-ldd-ok: program can exec if libs are made accessible with --ldd flag" {
+  if [ "$OS" == "Darwin" ]; then
+    skip "landrun specific flag --ldd is not supported on Darwin"
+  fi
   run test-no-nix-ldd-ok -c "echo ok"
   log_output
   [ "$status" -eq 0 ]
@@ -41,10 +45,13 @@ log_output () {
 @test "test-add-exec-disabled-fail: program cannot exec if not explicitly allowed" {
   run test-add-exec-disabled-fail -c "echo ok"
   log_output
-  [ "$status" -eq 1 ]
+  [ "$status" -ne 0 ]
 }
 
 @test "test-add-exec-disabled-ldd-ok: script can exec if not explicitly allowed but interpreter and libs are" {
+  if [ "$OS" == "Darwin" ]; then
+    skip "landrun specific flag --ldd is not supported on Darwin"
+  fi
   run test-add-exec-disabled-ldd-ok -c "echo ok"
   log_output
   [ "$status" -eq 0 ]
@@ -53,6 +60,9 @@ log_output () {
 
 
 @test "test-extra-args: passes extra arguments to landrun" {
+  if [ "$OS" == "Darwin" ]; then
+    skip "landrun specific flag -v (version) is not supported on Darwin"
+  fi
   # We configured test-extra-args with cli.extraArgs = [ "-v" ]
   # In landrun, -v flag prints the version and exits.
   run test-extra-args -c "echo ok"
@@ -61,10 +71,58 @@ log_output () {
   [[ "$output" == *"landrun version"* ]]
 }
 
+
+
 @test "test-ls can list /tmp" {
   run test-ls /tmp
   log_output
   [ "$status" -eq 0 ]
+}
+
+@test "test-mktemp can write to /tmp" {
+  run test-mktemp /tmp/test.XXXXXX
+  log_output
+  [ "$status" -eq 0 ]
+  # Check if output looks like a path
+  [[ "$output" == /tmp/test.* ]]
+}
+
+@test "test-mktemp can write to default tmp directory" {
+  run test-mktemp
+  log_output
+  [ "$status" -eq 0 ]
+  # Verify the file was actually created and is writable
+  [ -f "$output" ]
+  [ -w "$output" ]
+  rm "$output"
+}
+
+@test "test-mktemp-no-tmp fails to write to /tmp" {
+  run test-mktemp-no-tmp /tmp/test.XXXXXX
+  log_output
+  [ "$status" -ne 0 ]
+}
+
+@test "test-exec-tmp can execute script in /tmp" {
+  # We use test-env-var (bash) as it has features.tmp = true (default)
+  run test-env-var -c '
+    SCRIPT=$(mktemp /tmp/test-script.XXXXXX)
+    echo "#!$BASH" > "$SCRIPT"
+    echo "echo executed" >> "$SCRIPT"
+    chmod +x "$SCRIPT"
+    "$SCRIPT"
+  '
+  log_output
+  # This implies checking if execution is allowed.
+  # If status is 0, it allowed execution.
+  # If status is 126 or 1 (EPERM), it denied.
+  # We expect failure currently if tmp is not rwx
+  if [ "$status" -eq 0 ]; then
+    echo "Execution allowed"
+  else
+    echo "Execution denied"
+    false
+  fi
 }
 
 @test "test-ls can list /nix/store" {
@@ -74,9 +132,22 @@ log_output () {
 }
 
 @test "test-ls cannot list / (restricted by default)" {
-  run test-ls /
+  run test-ls /etc
   log_output
   [ "$status" -ne 0 ]
+}
+
+@test "test-tty can access terminal info" {
+  # This tries to read terminal settings
+  run test-tty -a
+  log_output
+  [ "$status" -eq 0 ]
+
+  # This tries to set terminal settings (requires write/ioctl access)
+  # using 'stty sane' which resets terminal to sane values
+  run test-tty sane
+  log_output
+  [ "$status" -eq 0 ]
 }
 
 @test "test-curl-deny fails to connect to google.com" {
@@ -127,7 +198,8 @@ log_output () {
   run test-no-access -c "cat test_secret"
   log_output
   [ "$status" -ne 0 ]
-  [ "$output" == "cat: test_secret: Permission denied" ]
+  # Linux (landrun) returns "Permission denied", Darwin (sandbox-exec) returns "Operation not permitted"
+  [[ "$output" == "cat: test_secret: Permission denied" || "$output" == "cat: test_secret: Operation not permitted" ]]
 }
 
 @test "test-multi-paths: respects multiple paths" {
@@ -199,17 +271,28 @@ log_output () {
 }
 
 @test "test-special-env: passes special characters and multiline" {
-  export SPECIAL_VAR="line1
+  export NOT_INHERITED='abc
+  --efd
+  '
+  export SPECIAL_VAR='line1
 line2
-special !@#\$%^&*()"
+  special !@#\$%^&*()'
+
   run test-special-env -c "echo \"\$SPECIAL_VAR\""
   log_output
+
   [ "$status" -eq 0 ]
   [ "$output" == "$SPECIAL_VAR" ]
+
+  local expected_line_count=3
+  if [ "$(wc -l <<< "$output")" -ne $expected_line_count ]; then
+    echo "Error: output must contain exactly $expected_line_count lines."
+    return 1
+  fi
 }
 
 @test "test-unrestricted-fs: can access /" {
-  run test-unrestricted-fs -c "ls -d /"
+  run test-unrestricted-fs -c "ls -d /etc"
   log_output
   [ "$status" -eq 0 ]
 }

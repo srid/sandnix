@@ -2,7 +2,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
-    landrun-nix.url = "github:srid/landrun-nix";
+    landrun-nix.url = "path:../../";
   };
 
   outputs = inputs@{ flake-parts, landrun-nix, ... }:
@@ -18,6 +18,7 @@
         };
 
         landrunApps.default = {
+          name = "claude";
           imports = [
             landrun-nix.landrunModules.gh # So, Claude can run `gh` CLI
             landrun-nix.landrunModules.git # So, Claude can run `git` CLI

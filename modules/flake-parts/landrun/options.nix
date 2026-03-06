@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, name ? null, ... }:
 let
   inherit (lib)
     mkOption
@@ -6,10 +6,16 @@ let
 in
 {
   options = {
+    name = mkOption {
+      type = types.str;
+      description = "Name given to the wrapper program. Defaults to submodule.name if used in attrsOf submodule.";
+    };
+
     program = mkOption {
       type = types.str;
       description = "The program to wrap with landrun (e.g., \${pkgs.foo}/bin/foo)";
     };
+
 
     features = mkOption {
       type = types.submodule {
@@ -35,7 +41,7 @@ in
           tmp = mkOption {
             type = types.bool;
             default = true;
-            description = "Enable read-write access to /tmp for temporary files";
+            description = "Enable read-write-execute access to /tmp for temporary files";
           };
 
           dbus = mkOption {
@@ -123,4 +129,6 @@ in
       description = "The resulting wrapped package (internal)";
     };
   };
+
+  config.name = lib.mkIf (name != null) (lib.mkDefault name);
 }
