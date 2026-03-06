@@ -65,6 +65,8 @@ let
 
       EOF
 
+      ${config.preHook}
+
       # Isolation of environment variables (like landrun does)
       ALLOWED_VARS=(${lib.concatStringsSep " " (map (e: "\"${e}\"") config.cli.env)})
       KEEP_VARS=("HOME" "USER" "LOGNAME" "PATH" "TERM" "SHELL" "LANG" "LC_ALL" "DISPLAY")
