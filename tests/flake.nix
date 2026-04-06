@@ -135,6 +135,9 @@
               cli.env = [ "HOOK_SECRET" ];
               preHook = "export HOOK_SECRET='decrypted_value'";
             };
+            test-sandbox-args = {
+              program = "${pkgs.bash}/bin/bash";
+            };
           };
 
           devShells.default = pkgs.mkShell {
