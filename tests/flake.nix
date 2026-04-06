@@ -137,6 +137,7 @@
             };
             test-sandbox-args = {
               program = "${pkgs.bash}/bin/bash";
+              features.tmp = false;
             };
           };
 
