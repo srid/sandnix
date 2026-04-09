@@ -37,6 +37,12 @@ log_output () {
   log_output
   [ "$status" -ne 0 ]
 
+  # If we don't pass --, all arguments are sent to landrun, so it will fail
+  # because landrun does not understand -c
+  run test-sandbox-args-with-args -c "cat test_secret"
+  log_output
+  [ "$status" -ne 0 ]
+
   # Now pass --ro ./test_secret before --
   run test-sandbox-args-with-args --ro ./test_secret -- -c "cat test_secret"
   log_output

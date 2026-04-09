@@ -55,12 +55,6 @@ let
             fi
           done
 
-          if [ "$seen_dash_dash" -eq 0 ]; then
-            # If no -- was found, all args go to program
-            program_args=("''${sandbox_args[@]}")
-            sandbox_args=()
-          fi
-
           exec landrun \
             "''${args[@]}" \
             ${staticArgs} \

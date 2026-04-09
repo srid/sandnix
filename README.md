@@ -116,7 +116,7 @@ Fine-grained control via `cli.*`:
 
 On Linux, sandnix generates an alternative binary variant named `<name>-with-args`. This variant allows you to dynamically pass sandbox configuration arguments directly to the underlying `landrun` executable at runtime.
 
-When using this variant, arguments passed *before* a `--` separator are provided to `landrun`, while all arguments *after* the `--` separator are passed to the wrapped program.
+When using this variant, arguments passed *before* a `--` separator are provided to `landrun`, while all arguments *after* the `--` separator are passed to the wrapped program. If no `--` is provided, all arguments are passed to `landrun`.
 
 **Example:**
 ```sh
