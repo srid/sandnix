@@ -1,54 +1,57 @@
 { lib, config, pkgs, ... }:
 {
   config = lib.mkIf (!pkgs.stdenv.isDarwin) {
-    wrappedPackage =
-      let
-        # Helper to generate conditional path argument
-        conditionalPathArg = flag: paths:
+    wrappedPackage = pkgs.writeShellApplication {
+      name = config.name;
+      runtimeInputs = [ pkgs.landrun ];
+      text = ''
+        ${config.preHook}
+
+        args=()
+
+        # Add conditional --rox paths
+        ${
           lib.concatMapStringsSep "\n"
             (p: ''
               if [ -e "${p}" ]; then
-                args+=("${flag}" "${p}")
+                args+=("--rox" "${p}")
               fi
             '')
-            paths;
+            config.cli.rox
+        }
 
-        # Static args (non-path related)
-        staticArgs = lib.concatStringsSep " \\\n      "
-          ([ ]
-            ++ (map (p: "--rwx \"${p}\"") config.cli.rwx)
-            ++ (map (p: "--rw \"${p}\"") config.cli.rw)
-            ++ (map (e: "--env ${e}") config.cli.env)
-            ++ (lib.optional config.cli.unrestrictedNetwork "--unrestricted-network")
-            ++ (lib.optional config.cli.unrestrictedFilesystem "--unrestricted-filesystem")
-            ++ (lib.optional config.cli.addExec "--add-exec")
-            ++ config.cli.extraArgs
-          );
-      in
-      (pkgs.writeShellApplication {
-        name = config.name;
-        runtimeInputs = [ pkgs.landrun ];
-        text = ''
-          ${config.preHook}
+        # Add conditional --ro paths
+        ${
+          lib.concatMapStringsSep "\n"
+            (p: ''
+              if [ -e "${p}" ]; then
+                args+=("--ro" "${p}")
+              fi
+            '')
+            config.cli.ro
+        }
 
-          args=()
+        exec landrun \
+          "''${args[@]}" \
+          ${
+            lib.concatStringsSep " \\\n    "
+              ([ ]
+                ++ (map (p: "--rwx \"${p}\"") config.cli.rwx)
+                ++ (map (p: "--rw \"${p}\"") config.cli.rw)
+                ++ (map (e: "--env ${e}") config.cli.env)
+                ++ (lib.optional config.cli.unrestrictedNetwork "--unrestricted-network")
+                ++ (lib.optional config.cli.unrestrictedFilesystem "--unrestricted-filesystem")
+                ++ (lib.optional config.cli.addExec "--add-exec")
+                ++ config.cli.extraArgs
+              )
+          } \
+          ${config.program} "$@"
+      '';
+    } // {
+      meta = config.meta;
+    };
 
-          # Add conditional --rox paths
-          ${conditionalPathArg "--rox" config.cli.rox}
-
-          # Add conditional --ro paths
-          ${conditionalPathArg "--ro" config.cli.ro}
-
-          exec landrun \
-            "''${args[@]}" \
-            ${staticArgs} \
-            ${config.program} "$@"
-        '';
-      }) // {
-        meta = config.meta;
-      };
-
-    wrappedPackageWIthSandboxArgs =
+    wrappedPackageWithSandboxArgs =
       let
         # Helper to generate conditional path argument
         conditionalPathArg = flag: paths:

@@ -134,7 +134,7 @@ in
       description = "The resulting wrapped package (internal)";
     };
 
-    wrappedPackageWIthSandboxArgs = mkOption {
+    wrappedPackageWithSandboxArgs = mkOption {
       type = types.package;
       internal = true;
       description = "The resulting wrapped package allowing sandbox arguments before -- (internal)";

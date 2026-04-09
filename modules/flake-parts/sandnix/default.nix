@@ -15,7 +15,7 @@ in
             config.sandnixApps
             // lib.optionalAttrs pkgs.stdenv.isLinux
               (lib.mapAttrs'
-                (name: cfg: lib.nameValuePair "${name}-with-args" cfg.wrappedPackageWIthSandboxArgs)
+                (name: cfg: lib.nameValuePair "${cfg.name}-with-args" cfg.wrappedPackageWithSandboxArgs)
                 config.sandnixApps);
 
           apps = lib.mapAttrs
@@ -28,10 +28,10 @@ in
             // lib.optionalAttrs pkgs.stdenv.isLinux
               (lib.mapAttrs'
                 (name: cfg: {
-                  name = "${name}-with-args";
+                  name = "${cfg.name}-with-args";
                   value = {
                     type = "app";
-                    program = lib.getExe cfg.wrappedPackageWIthSandboxArgs;
+                    program = lib.getExe cfg.wrappedPackageWithSandboxArgs;
                     meta = cfg.meta;
                   };
                 })
