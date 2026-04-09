@@ -112,6 +112,19 @@ Fine-grained control via `cli.*`:
 | `unrestrictedNetwork` | Allow all network access |
 | `addExec` | Auto-add executable to rox (default: true) |
 
+### Dynamic Sandbox Arguments (Linux Only)
+
+On Linux, sandnix generates an alternative binary variant named `<name>-with-args`. This variant allows you to dynamically pass sandbox configuration arguments directly to the underlying `landrun` executable at runtime.
+
+When using this variant, arguments passed *before* a `--` separator are provided to `landrun`, while all arguments *after* the `--` separator are passed to the wrapped program.
+
+**Example:**
+```sh
+nix run .#my-app-sandboxed-with-args -- --rw /my/dynamic/path -- arg1 arg2
+```
+
+**Important:** In scripts or wrappers that may provide program arguments dynamically, you should always explicitly include the `--` separator. This ensures that a `--` meant for the wrapped program (or a wrapper within it) is not misinterpreted by the sandnix wrapper as the delimiter for sandbox arguments.
+
 ## Discussions
 
 https://github.com/srid/sandnix/discussions
