@@ -26,6 +26,30 @@ log_output () {
   [ "$status" -eq 0 ]
 }
 
+@test "test-sandbox-args-with-args: passing args before -- and after --" {
+  if [ "$OS" == "Darwin" ]; then
+    skip "with-args variant is only implemented for Linux"
+  fi
+
+  # Try to read test_secret
+  # If we don't pass --rw, it should fail
+  run test-sandbox-args-with-args -- -c "cat test_secret"
+  log_output
+  [ "$status" -ne 0 ]
+
+  # If we don't pass --, all arguments are sent to landrun, so it will fail
+  # because landrun does not understand -c
+  run test-sandbox-args-with-args -c "cat test_secret"
+  log_output
+  [ "$status" -ne 0 ]
+
+  # Now pass --ro ./test_secret before --
+  run test-sandbox-args-with-args --ro ./test_secret -- -c "cat test_secret"
+  log_output
+  [ "$status" -eq 0 ]
+  [ "$output" = "This is a secret" ]
+}
+
 @test "test-prestart-dir: creates directory before sandbox starts" {
   # The hook runs 'mkdir -p ./created_by_hook'
   # The program runs 'ls -d ./created_by_hook' implicitly via test-ls command if arguments allow,

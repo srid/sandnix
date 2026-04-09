@@ -133,6 +133,12 @@ in
       internal = true;
       description = "The resulting wrapped package (internal)";
     };
+
+    wrappedPackageWithSandboxArgs = mkOption {
+      type = types.package;
+      internal = true;
+      description = "The resulting wrapped package allowing sandbox arguments before -- (internal)";
+    };
   };
 
   config.name = lib.mkIf (name != null) (lib.mkDefault name);
